@@ -13,22 +13,47 @@ import (
 
 // CreateBlog is the resolver for the createBlog field.
 func (r *mutationResolver) CreateBlog(ctx context.Context, input model.BlogInput) (*model.Blog, error) {
-	panic(fmt.Errorf("not implemented: CreateBlog - createBlog"))
+	id := r.GetNextID()
+	newBlog := &model.Blog{
+		ID:    id,
+		Title: input.Title,
+		Body:  input.Body,
+		Date:  input.Date,
+		Author: &model.Author{
+			ID:        input.Author.ID,
+			Firstname: input.Author.Firstname,
+			Lastname:  input.Author.Lastname,
+			Nickname:  input.Author.Nickname,
+		},
+		Status: model.StatusPublished,
+	}
+	r.DB[id] = newBlog
+	return newBlog, nil
 }
 
 // DeleteBlog is the resolver for the deleteBlog field.
 func (r *mutationResolver) DeleteBlog(ctx context.Context, id int) (int, error) {
-	panic(fmt.Errorf("not implemented: DeleteBlog - deleteBlog"))
+	delete(r.DB, id)
+	return id, nil
 }
 
 // BlogList is the resolver for the blogList field.
 func (r *queryResolver) BlogList(ctx context.Context) ([]*model.Blog, error) {
-	panic(fmt.Errorf("not implemented: BlogList - blogList"))
+	var blogList []*model.Blog
+
+	for _, b := range r.DB {
+		blogList = append(blogList, b)
+	}
+	return blogList, nil
 }
 
 // GetBlog is the resolver for the getBlog field.
 func (r *queryResolver) GetBlog(ctx context.Context, id int) (*model.Blog, error) {
-	panic(fmt.Errorf("not implemented: GetBlog - getBlog"))
+	blog, ok := r.DB[id]
+	if !ok {
+		return nil, fmt.Errorf("Blog with %d Not found!!", id)
+	}
+	return blog, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
