@@ -1,0 +1,47 @@
+type Blog{
+  id: ID!
+  title: String!
+  body: String!
+  date: Date!
+  author: Author!
+  status: Status!
+}
+
+scalar Date
+
+type Author{
+  id: ID!
+  firstname: String!
+  lastname: String!
+  nickname: String!
+}
+
+enum Status{
+  PUBLISHED
+  DRAFT
+  DELETED
+}
+
+type Query{
+  blogList: [Blog!]
+  getBlog(id: ID!): Blog
+}
+
+input BlogInput{
+  title: String!
+  body: String!
+  date: Date!
+  author: AuthorInput!
+}
+
+input AuthorInput{
+  id: ID!
+  firstname: String!
+  lastname: String!
+  nickname: String!
+}
+
+type Mutation{
+  createBlog(input: BlogInput!): Blog
+  deleteBlog(id: ID!): ID!
+}
